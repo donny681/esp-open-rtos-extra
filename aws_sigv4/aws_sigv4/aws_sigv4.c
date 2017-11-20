@@ -20,10 +20,7 @@
 #include <time.h>
 #include <assert.h>
 #include "aws_sigv4.h"
-#include "aws_headers.h"
-#include "aws_params.h"
-#include "aws_status.h"
-#include "bstrlib.h"
+
 #include "crypto.h"
 #include "hmac.h"
 #include "uri.h"
@@ -34,29 +31,7 @@
 
 static char *http_request_methods[4] = { "GET", "POST", "PUT", "DELETE" };
 
-struct request_date {
-	bstring original_str;
-	bstring str; /* YYYY-MM-DDTHH:MM:SSZ */
-	bstring str_date_only; /* YYYY-MM-DD */
-	struct tm tm;
-};
 
-struct aws_context {
-	bstring request_method;
-	bstring account_id;
-	bstring region;
-	bstring service;
-	bstring host;
-	bstring path;
-	struct request_date date;
-	bstring canonical_request;
-	bstring credential_scope;
-	bstring string_to_sign;
-	bstring signature;
-	aws_headers_t headers;
-	aws_params_t params;
-	bstring form_data;
-};
 
 static bool initialized = false;
 

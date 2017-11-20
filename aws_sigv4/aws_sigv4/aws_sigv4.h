@@ -16,11 +16,40 @@
 
 #ifndef AWS_H
 #define AWS_H
+#include "bstrlib.h"
 
+#include "aws_headers.h"
+#include "aws_params.h"
+#include "aws_status.h"
 #define AWS_SIGNING_ALGORITHM "AWS4-HMAC-SHA256"
 #define AWS_REQUEST_STRING "aws4_request"
 #define AWS_AWS4_STRING "AWS4"
 #define AWS_DATE_FORMAT "%a, %d %b %Y %H:%M:%S GMT"
+
+struct request_date {
+	bstring original_str;
+	bstring str; /* YYYY-MM-DDTHH:MM:SSZ */
+	bstring str_date_only; /* YYYY-MM-DD */
+	struct tm tm;
+};
+
+struct aws_context {
+	bstring request_method;
+	bstring account_id;
+	bstring region;
+	bstring service;
+	bstring host;
+	bstring path;
+	struct request_date date;
+	bstring canonical_request;
+	bstring credential_scope;
+	bstring string_to_sign;
+	bstring signature;
+	aws_headers_t headers;
+	aws_params_t params;
+	bstring form_data;
+};
+
 
 typedef struct aws_context *aws_t;
 
