@@ -36,7 +36,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
-//#include "os_port.h"
+#include "crypto.h"
 //#include "crypto_misc.h"
 #ifdef CONFIG_WIN32_USE_CRYPTO_LIB
 #include "wincrypt.h"
@@ -99,14 +99,13 @@ int get_file(const char *filename, uint8_t **buf)
     return filesize;
 }
 #endif
-
 /**
  * Initialise the Random Number Generator engine.
  * - On Win32 use the platform SDK's crypto engine.
  * - On Linux use /dev/urandom
  * - If none of these work then use a custom RNG.
  */
-EXP_FUNC void STDCALL RNG_initialize()
+void  RNG_initialize()
 {
 #if !defined(WIN32) && defined(CONFIG_USE_DEV_URANDOM)
     rng_fd = open("/dev/urandom", O_RDONLY);
@@ -137,7 +136,7 @@ EXP_FUNC void STDCALL RNG_initialize()
 /**
  * If no /dev/urandom, then initialise the RNG with something interesting.
  */
-EXP_FUNC void STDCALL RNG_custom_init(const uint8_t *seed_buf, int size)
+ void  RNG_custom_init(const uint8_t *seed_buf, int size)
 {
 #if defined(WIN32) || defined(CONFIG_WIN32_USE_CRYPTO_LIB)
     int i;
@@ -150,7 +149,7 @@ EXP_FUNC void STDCALL RNG_custom_init(const uint8_t *seed_buf, int size)
 /**
  * Terminate the RNG engine.
  */
-EXP_FUNC void STDCALL RNG_terminate(void)
+ void  RNG_terminate(void)
 {
 #if defined(CONFIG_USE_DEV_URANDOM)
     close(rng_fd);
@@ -162,7 +161,7 @@ EXP_FUNC void STDCALL RNG_terminate(void)
 /**
  * Set a series of bytes with a random number. Individual bytes can be 0
  */
-EXP_FUNC int STDCALL get_random(int num_rand_bytes, uint8_t *rand_data)
+ int  get_random(int num_rand_bytes, uint8_t *rand_data)
 {   
 #if !defined(WIN32) && defined(CONFIG_USE_DEV_URANDOM)
     /* use the Linux default - read from /dev/urandom */
@@ -282,7 +281,7 @@ static void print_hex(uint8_t hex)
  * @param data     [in]    The start of data to use
  * @param ...      [in]    Any additional arguments
  */
-EXP_FUNC void STDCALL print_blob(const char *format,
+ void  print_blob(const char *format,
         const uint8_t *data, int size, ...)
 {
     int i;
@@ -303,7 +302,7 @@ EXP_FUNC void STDCALL print_blob(const char *format,
 }
 #elif defined(WIN32)
 /* VC6.0 doesn't handle variadic macros */
-EXP_FUNC void STDCALL print_blob(const char *format, const unsigned char *data,
+ void  print_blob(const char *format, const unsigned char *data,
         int size, ...) {}
 #endif
 
@@ -324,7 +323,7 @@ static const uint8_t map[128] PROGMEM =
     49,  50,  51, 255, 255, 255, 255, 255
 };
 
-EXP_FUNC int STDCALL base64_decode(const char *in, int len,
+ int  base64_decode(const char *in, int len,
                     uint8_t *out, int *outlen)
 {
     int g, t, x, y, z;
