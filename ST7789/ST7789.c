@@ -10,6 +10,7 @@
 
 uint16_t BACK_COLOR=0xffff;
 uint16_t FRONT_COLOR=0x0000;
+uint8_t DIRE;
 
 /*
 * biref : init gpio rs and rst to output
@@ -24,7 +25,7 @@ void LCD_GPIO_Init(void)
 
     gpio_write(LCD_RS, 1);      //set rs=1  data mode
     gpio_write(LCD_RST,1);      //set reset=1 not reset
-    res = spi_init(SPI_BUS, SPI_MODE0, SPI_FREQ_DIV_1M, 1, SPI_BIG_ENDIAN, false); // init SPI module
+    res = spi_init(SPI_BUS, SPI_MODE0, SPI_FREQ_DIV_8M, 1, SPI_BIG_ENDIAN, false); // init SPI module
     if(res)
     {
         printf("SPI Init OK!\r\n");
@@ -149,6 +150,22 @@ void LCD_Init(void)
     writecmd(0x29);
     writecmd(0x2c);
 
+}
+
+void LCD_SetDir(uint8_t dir)
+{
+	if(LANDSCAPE == dir)
+	{
+		writecmd(0x36);         //page data access control
+		writedata(0x00);
+		DIRE = 0;
+	}
+	else
+	{
+		writecmd(0x36);         //page data access control
+		writedata(0x60);
+		DIRE = 1;
+	}
 }
 void LCD_SetWindow(uint16_t xs,uint16_t ys,uint16_t xe,uint16_t ye)//set operate window
 {
